@@ -2,3 +2,4 @@ svg-data/
 *.code-workspace
 *.txt
 config.json
+config.json.js

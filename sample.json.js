@@ -1,4 +1,4 @@
-{
+var sample = {
 	"sample" : {
 		"name" : "샘플",
 		"foregroundSvg" : "./sample/accessibility_new-24px.svg",

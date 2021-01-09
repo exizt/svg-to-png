@@ -5,6 +5,8 @@
 <title>(Dev) Svg to Png</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+<script src="./config.json.js"></script>
+<script src="./sample.json.js"></script>
 <style>
 canvas {
 	border:1px solid #eee;
@@ -43,6 +45,7 @@ canvas {
 	<div id="png-container"></div>
 </body>
 <script>
+	// 글로벌 변수들
 	var presetId = "";
 	var presets = {};
 
@@ -53,11 +56,16 @@ canvas {
 	var backgroundSvg = ""
 
 	// 변환할 사이즈 종류
-	var sizes = [48, 72, 96, 144, 192];
+	var sizes = [];
 
 	// 구현부
 	document.addEventListener('DOMContentLoaded', function() {
-		loadConfigWithDraw("config.json")
+		//loadConfigWithDraw("config.json")
+		if(typeof config === "undefined"){
+			loadPresetWithDraw(sample)
+		} else {
+			loadPresetWithDraw(config)
+		}
 
 		document.getElementById("reverseHtmlBg").addEventListener("click",(evt)=>{
 			var el = evt.target
@@ -66,6 +74,11 @@ canvas {
 		})
 	});
 
+	/**
+	 * [deprecated]
+	 * config 로드 및 png draw 호출
+	 * json 을 ajax 로 사용하던 걸 그냥 .js 로 변경했으므로 이 함수는 사용되지 않음...
+	 */
 	function loadConfigWithDraw(jsonUri){
 		fetch(jsonUri)
 		.then(response => {
@@ -80,15 +93,7 @@ canvas {
 			}
 		})
 		.then(json => {
-			//console.log(json)
-			presets = json
-
-			// 목록 셋팅 및 이벤트 셋팅
-			initPresetsView()
-	
-			// 첫번째 항목을 선택 및 드로우
-			presetId = Object.keys(presets)[0]
-			createWithDrawCanvas();
+			loadPresetWithDraw(json)
 		})
 		.catch(error => {
 			console.log(error)
@@ -96,7 +101,22 @@ canvas {
 	}
 
 	/**
-	 * 이벤트 셋팅
+	 * presets를 셋팅하고 canvas를 draw함.
+	 */
+	function loadPresetWithDraw(json){
+		//console.log(json)
+		presets = json
+
+		// 목록 셋팅 및 이벤트 셋팅
+		initPresetsView()
+
+		// 첫번째 항목을 선택 및 드로우
+		presetId = Object.keys(presets)[0]
+		createWithDrawCanvas();
+	}
+
+	/**
+	 * presets 목록 select box 셋팅
 	 */
 	function initPresetsView(){
 		var selPresets = document.getElementById("presets")
