@@ -58,6 +58,10 @@ canvas {
 	// 변환할 사이즈 종류
 	var sizes = [];
 
+	var filenameRule = '';
+
+	var protocol = location.protocol
+
 	// 구현부
 	document.addEventListener('DOMContentLoaded', function() {
 		//loadConfigWithDraw("config.json")
@@ -144,6 +148,7 @@ canvas {
 		foregroundSvg = preset.foregroundSvg;
 		backgroundSvg = preset.backgroundSvg;
 		sizes = preset.sizes;
+		filenameRule = preset.filename;
 
 		createCanvasElements();
 		
@@ -229,14 +234,21 @@ canvas {
 	* 생성되어있는 canvas를 탐색해서 png로 다운로드 받는다.
 	*/
 	function downloadPng(){
+		if(protocol == "file:"){
+			alert("웹 서버에서 동작된 경우에만 PNG 일괄 다운로드가 가능합니다 (브라우저 권한 이슈")
+			return
+		}
+
 		var canvasList = document.getElementsByTagName('canvas');
 		for (var i = 0; i < canvasList.length; i++) {
-			download(canvasList[i].id)
+			download(canvasList[i].id, canvasList[i].width)
 		}
-		function download(canvasId){
+		function download(canvasId, size){
 			
 			var link = document.createElement('a');
-			var filename = canvasId+'.png';
+			//var filename = canvasId+'.png';
+			//var filename = `canvas-${size}`+'.png';
+			var filename = filenameRule.formatUnicorn({"size":size})
 			link.download = filename
 			//console.log(filename)
 			link.href = document.getElementById(canvasId).toDataURL("image/png")
@@ -244,5 +256,26 @@ canvas {
 			
 		}
 	}
+
+	/**
+	 * https://gist.github.com/richardblondet/9a23a155e6a784f1ff2cbd8d84accd72
+	 */
+	String.prototype.formatUnicorn = String.prototype.formatUnicorn || function () {
+		"use strict";
+		var str = this.toString();
+		if (arguments.length) {
+			var t = typeof arguments[0];
+			var key;
+			var args = ("string" === t || "number" === t) ?
+				Array.prototype.slice.call(arguments)
+				: arguments[0];
+
+			for (key in args) {
+				str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+			}
+		}
+
+		return str;
+	};
 </script>
 </html>
