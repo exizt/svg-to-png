@@ -3,3 +3,4 @@ svg-data/
 *.txt
 config.json
 config.json.js
+node_modules
