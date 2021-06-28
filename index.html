@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>(Dev) Svg to Png</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+<script src="./config.json.js"></script>
+<script src="./sample.json.js"></script>
+<script src="./dist/svgtopng.js"></script>
+<style>
+canvas {
+	border:1px solid #eee;
+}
+.wrap-canvas {
+	margin: 2rem;
+	display:inline-block;
+	text-align: center;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<div class="text-end">
+			<div class="form-check form-check-inline form-switch">
+				<input class="form-check-input" type="checkbox" id="reverseHtmlBg">
+				<label class="form-check-label" for="reverseHtmlBg" id="reverseHtmlBgLabel">HTML 배경 반전</label>
+			</div>
+		</div>
+		<div class="card">
+			<div class="card-body">
+				<div class="mb-3">
+					<label for="presets">Preset 선택</label>
+					<select class="form-control" id="presets">
+					  <option></option>
+					</select>
+				</div>
+				<div class="mb-3">
+					<button type="button" class="btn btn-primary" onclick="downloadPng()">PNG 다운로드</button>
+					<button type="button" class="btn btn-outline-primary" onclick="redraw()">재생성</button>
+				</div>
+			</div>
+		  </div>
+	</div>
+	<div id="canvas-container"></div>
+	<div id="png-container"></div>
+</body>
+<script>
+	var svgToPng = new SvgToPng({canvasContainerId:"canvas-container"})
+
+	// 구현부
+	document.addEventListener('DOMContentLoaded', function() {
+		// svg-to-png 실행
+		loadWithDraw()
+
+		// 배경 반전
+		document.getElementById("reverseHtmlBg").addEventListener("click",(event)=>{
+			var el = event.target
+			document.body.style.backgroundColor = (el.checked) ? "black" : ""
+			document.getElementById("reverseHtmlBgLabel").style.color = (el.checked) ? "white" : ""
+		})
+	});
+
+	/**
+	 * SvgToPng 실행
+	 */
+	function loadWithDraw(){
+		let presets = (typeof config === "undefined") ? sample : config
+
+		// 목록 셋팅 및 이벤트 셋팅
+		initPresetsView(presets)
+
+		// SvgToPng 
+		svgToPng.loadPresetWithDraw(presets)
+	}
+
+	/**
+	 * presets 목록 select box 셋팅
+	 */
+	function initPresetsView(presets){
+		var selPresets = document.getElementById("presets")
+		selPresets.innerHTML = ""
+
+		var html = ""
+		for(key in presets) {
+			html += `<option value="${key}">${presets[key].name} [${key}]</option>`
+		}
+		selPresets.innerHTML = html
+
+		document.getElementById("presets").addEventListener("change", function(event){
+			//console.log(evt.target.value)
+			let presetId = event.target.value
+			svgToPng.createWithDrawCanvas(presetId)
+		})
+	}
+
+	/**
+	 * 재생성
+	 */
+	function redraw(){
+		svgToPng.redraw()
+	}
+
+	function downloadPng(){
+		svgToPng.downloadPng()
+	}
+</script>
+</html>
