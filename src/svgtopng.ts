@@ -1,3 +1,8 @@
+/**
+ * SvgToPng 1.1.6
+ * License : MIT
+ * Author : EXIzT
+ */
 class SvgToPng {
     private _presets?:any
     private _currentPreset?:IPreset

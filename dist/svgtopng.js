@@ -1,4 +1,9 @@
 "use strict";
+/**
+ * SvgToPng 1.1.6
+ * License : MIT
+ * Author : EXIzT
+ */
 class SvgToPng {
     _presets;
     _currentPreset;
